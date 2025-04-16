@@ -1,4 +1,4 @@
-# Editor
+# editor.rs
 
 ```bash
 $ cargo build

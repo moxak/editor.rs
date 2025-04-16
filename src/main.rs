@@ -1,5 +1,6 @@
 use eframe::egui;
 use std::default::Default;
+use epaint;
 
 struct DocumentApp {
     document_text: String,
@@ -44,10 +45,22 @@ impl DocumentApp {
 }
 
 impl eframe::App for DocumentApp {
+
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("Document Editor");
-            
+        // Configuration
+        ctx.set_visuals(egui::Visuals::light());
+
+        // Configuration for central panel
+        let frame = egui::containers::Frame {
+            inner_margin: epaint::Margin::same(0),
+            outer_margin: epaint::Margin::same(0),
+            fill: ctx.style().visuals.extreme_bg_color,
+            stroke: egui::Stroke { width: 0.0, color: egui::Color32::TRANSPARENT },
+            corner_radius: egui::CornerRadius { nw: 0, ne: 0, sw: 0, se: 0 },
+            ..Default::default()
+        };
+
+        egui::CentralPanel::default().frame(frame).show(ctx, |ui| {
             // メニューバー
             egui::menu::bar(ui, |ui| {
                 ui.menu_button("File", |ui| {
@@ -74,12 +87,17 @@ impl eframe::App for DocumentApp {
                     }
                 });
             });
-            
-            // テキストエディタ領域
-            let text_edit = egui::TextEdit::multiline(&mut self.document_text)
+
+            let editor_area = egui::TextEdit::multiline(&mut self.document_text)
+                .font(egui::TextStyle::Monospace) // for cursor height
+                .code_editor()
                 .desired_width(f32::INFINITY)
-                .desired_rows(30);
-            ui.add(text_edit);
+                .desired_rows(10)
+                .lock_focus(true)
+                .desired_width(f32::INFINITY);
+            ui.add(editor_area);
+
+            
         });
     }
 }
