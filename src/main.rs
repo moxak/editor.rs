@@ -6,8 +6,36 @@ struct DocumentApp {
     file_path: Option<String>,
 }
 
-impl Default for DocumentApp {
-    fn default() -> Self {
+impl DocumentApp {
+    fn new(cc: &eframe::CreationContext<'_>) -> Self {
+        // フォント設定
+        let mut fonts = egui::FontDefinitions::default();
+        
+        // 日本語フォントを追加
+        // システムにインストールされているフォントのパスを指定するか、
+        // アプリにバンドルするフォントファイルのデータを使用します
+        
+        // フォントファイルをバンドルする場合
+        let font_data = egui::FontData::from_static(include_bytes!("../assets/IBMPlexSansJP-Regular.ttf"));
+        
+        // フォントファミリーに追加
+        fonts.font_data.insert("japanese_font".to_owned(), font_data.into());
+        
+        // ファミリーに追加 (proportional = 可変幅フォント)
+        fonts.families
+            .entry(egui::FontFamily::Proportional)
+            .or_default()
+            .insert(0, "japanese_font".to_owned()); // 優先度を高くするために先頭に挿入
+        
+        // 固定幅フォントファミリーにも追加
+        fonts.families
+            .entry(egui::FontFamily::Monospace)
+            .or_default()
+            .push("japanese_font".to_owned());
+        
+        // フォント設定を適用
+        cc.egui_ctx.set_fonts(fonts);
+        
         Self {
             document_text: String::new(),
             file_path: None,
@@ -63,6 +91,6 @@ fn main() -> Result<(), eframe::Error> {
     eframe::run_native(
         "Document Editor",
         options,
-        Box::new(|_cc| Ok(Box::new(DocumentApp::default()))),
+        Box::new(|_cc| Ok(Box::new(DocumentApp::new(_cc)))),
     )
 }
