@@ -2,8 +2,11 @@
 name = "editor"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
 
 [dependencies]
-eframe = "0.31.1"
-egui = "0.31.1"
-epaint = "0.31.1"
+slint = "1.10.0"
+rfd = "0.12.0"
+
+[build-dependencies]
+slint-build = "1.10.0"
